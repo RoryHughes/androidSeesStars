@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class seeStars extends Activity
@@ -13,11 +14,17 @@ public class seeStars extends Activity
     private LocationManager lm;
     private LocationListener locListener;
     
-    private String TLEUrl = "http://celestrak.com/NORAD/elements/stations.txt";
-    private String TLEFileName = "isstle.txt";
-    /*very basic - will make use of some method of storing url&name of file
-     * and loop through all files from celestrack (and possibly others)
-	*/
+    //private String TLEUrl = "http://celestrak.com/NORAD/elements/stations.txt";
+    //private String TLEFileName = "isstle.txt";
+    
+    private static final String[] celestrakTles =
+	{"tle-new","stations","visual","1999-025","iridium-33-debris","cosmos-2251-debris",
+		"weather","noaa","goes","resource","sarsat","dmc","tdrss","geo","intelsat",
+		"gorizont","raduga","molniya","iridium","orbcomm","globalstar","amateur",
+		"x-comm","other-comm","gps-ops","glo-ops","galileo","sbas","nnss","musson",
+		"science","geodetic","engineering","military","radar","cubesat","other"
+	}; //TODO - change to res file - can change files to use without rewriting any code
+    private static final String tlePrefix = "http://celestrak.com/NORAD/elements/";
     
 	/** Called when the activity is first created. */
     @Override
@@ -25,7 +32,7 @@ public class seeStars extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        //show logo
+        //TODO - show logo
         
         //set up location
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -34,11 +41,20 @@ public class seeStars extends Activity
         
         //get TLEs
         TLEDownloader TLEGetter = new TLEDownloader();
-        TLEGetter.downloadFromUrl(TLEUrl, TLEFileName, this);
+        int count = 0;
+        for(String tle : celestrakTles)
+        {
+        	TLEGetter.downloadFromUrl(tlePrefix+tle+".txt", tle+".txt", this);
+        	count++;
+        }
+        
+        TextView tv = (TextView)findViewById(R.id.textTest);
+		tv.setText(Integer.toString(count));
+        
+        /*TLEGetter.downloadFromUrl(TLEUrl, TLEFileName, this);
         	//will loop through all tle files @ celestrack, calling this each time
         	//overwrite any existing files, only use old ones if no network connection
-        
-        
+        displayTLEFile();*/
     }
     
     /*public void onResume()
@@ -90,6 +106,42 @@ public class seeStars extends Activity
         }
     }
 
-    
+    /*private void displayTLEFile()
+    {
+    	try
+    	{
+    		StringBuilder text = new StringBuilder();
+    		
+    		FileInputStream fis = getBaseContext().openFileInput(TLEFileName);
+    		BufferedInputStream bis = new BufferedInputStream(fis);
+    		ByteArrayBuffer bab = new ByteArrayBuffer(50);
+    		int curr = 0;
+			try
+			{
+				while((curr = bis.read()) != -1)
+				{
+					bab.append((byte) curr);
+				}
+			}
+			catch (IOException e)
+			{
+				//TODO - do error handling
+			}
+			byte[] ba = bab.toByteArray();
+			for(int i = 0; i <ba.length; i++)
+			{
+				text.append((char) ba[i]); 
+			}
+    		
+			
+			TextView tv = (TextView)findViewById(R.id.textTest);
+			tv.setText(text);
+    	}
+    	catch(FileNotFoundException e)
+    	{
+    		//TODO - error handling
+    	}
+    	
+    }*/
 
 }
