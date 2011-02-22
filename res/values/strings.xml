@@ -2,4 +2,7 @@
 <resources>
     <string name="hello">Hello World, seeStars!</string>
     <string name="app_name">Android Sees Stars</string>
+    <string name="getting_tles">Getting TLE files and GPS location...</string>
+    <string name="no_connectivity">No Internet Connectivity - Using local TLEs</string>
+    <string name="files_downloaded">Files Downloaded</string>
 </resources>

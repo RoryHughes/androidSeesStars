@@ -11,16 +11,36 @@ import java.net.URLConnection;
 import org.apache.http.util.ByteArrayBuffer;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 public class TLEDownloader
 {
 	//private final String PATH = "/data/data/uk.roryHughes.adroidSeesStars/";
-		//file location
+	//file location
+	
+	public int downloadTLESet(String[] files, String prefix, ConnectivityManager conManager, Context context)
+	{
+        if(conManager.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED || 
+        	conManager.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED )
+        {
+        	int count = 0;
+	        for(String tle : files)
+	        {
+	        	downloadFromUrl(prefix+tle+".txt", tle+".txt", context);
+	        	count++;
+	        }
+	        return count;
+        }
+        else
+        	return -1;
+	}
 	
 	/**downloader method */
-	public void downloadFromUrl(String TLEUrl, String fileName, Context context)
+	private void downloadFromUrl(String TLEUrl, String fileName, Context context)
 	{
+		
 		try
 		{
 			URL url   = new URL(TLEUrl);
