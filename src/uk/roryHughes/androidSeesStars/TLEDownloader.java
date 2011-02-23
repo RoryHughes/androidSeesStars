@@ -19,22 +19,25 @@ public class TLEDownloader
 {
 	//private final String PATH = "/data/data/uk.roryHughes.adroidSeesStars/";
 	//file location
+	private Context mCreatorContext;
 	
-	public int downloadTLESet(String[] files, String prefix, ConnectivityManager conManager, Context context)
+	public TLEDownloader(Context context)
 	{
-        if(conManager.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED || 
+		this.mCreatorContext = context;
+	}
+	
+	public void downloadTLESet(String[] files, String prefix, ConnectivityManager conManager)
+	{
+        //TODO - put into seperate thread
+		if(conManager.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED || 
         	conManager.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED )
         {
-        	int count = 0;
 	        for(String tle : files)
 	        {
-	        	downloadFromUrl(prefix+tle+".txt", tle+".txt", context);
-	        	count++;
+	        	downloadFromUrl(prefix+tle+".txt", tle+".txt", mCreatorContext);
 	        }
-	        return count;
         }
-        else
-        	return -1;
+		Log.d("TLEDownloader", "Download Complete");
 	}
 	
 	/**downloader method */
@@ -70,7 +73,7 @@ public class TLEDownloader
 				FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_WORLD_READABLE);
 				fos.write(bab.toByteArray());
 				fos.close();
-				Log.d("TLEDownloader", "Download attempt took "+((System.currentTimeMillis() - startTime)/1000)+" sec");
+				Log.d("TLEDownloader", "Download took "+((System.currentTimeMillis() - startTime)/1000)+" sec");
 			}
 			catch(FileNotFoundException e)
 			{
