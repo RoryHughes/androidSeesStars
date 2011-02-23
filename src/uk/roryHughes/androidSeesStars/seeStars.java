@@ -11,9 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class seeStars extends Activity implements SensorEventListener
 {
@@ -33,7 +31,7 @@ public class seeStars extends Activity implements SensorEventListener
 	private TextView mOutputZo;
 	
 	private TextView mGPSlat;
-	private TextView mGPSlon;
+	private TextView mGPSlon;    
     
 	private static final String[] mCelestrakTles =
 	{"tle-new","stations","visual","1999-025","iridium-33-debris","cosmos-2251-debris",
@@ -52,8 +50,9 @@ public class seeStars extends Activity implements SensorEventListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         //TODO - show logo
+        
+        //TODO - cleanup views - this seems very messy!
         TextView tvTest = (TextView)findViewById(R.id.textTest);
-        TextView tv00 = (TextView)findViewById(R.id.TextView00);
         mOutputXa = (TextView)findViewById(R.id.TVmOutputXa);
         mOutputYa = (TextView)findViewById(R.id.TVmOutputYa);
         mOutputZa = (TextView)findViewById(R.id.TVmOutputZa);
@@ -64,7 +63,6 @@ public class seeStars extends Activity implements SensorEventListener
         mGPSlon   = (TextView)findViewById(R.id.TVGPSlon);
            
         tvTest.setText(R.string.getting_tles);  
-        
         //TODO - lock screen on when app is focused
         
         //set up location
@@ -73,7 +71,7 @@ public class seeStars extends Activity implements SensorEventListener
         mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocListener);
         
         //get TLEs
-        //TODO - check if files exist & are up to date (less than e.g. 1 day old)
+        //TODO - check if files exist & are up to date (if less than e.g. 1 day old don't bother)
         mConManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         mTLEGetter = new TLEDownloader(getApplicationContext());        
         new Thread(new Runnable() {
@@ -82,9 +80,11 @@ public class seeStars extends Activity implements SensorEventListener
         	}
         }).start();
         
-        
         //setup sensor manager
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        
+        //set up video background
+        //TODO - video!
         
     }
     
@@ -163,6 +163,6 @@ public class seeStars extends Activity implements SensorEventListener
     
 	public void onAccuracyChanged(Sensor sensor, int accuracy)
 	{
-		 
+		 //for orientation/accelerometer
 	}
 }
