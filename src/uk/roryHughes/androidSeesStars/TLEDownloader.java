@@ -37,7 +37,6 @@ public class TLEDownloader
 	        	downloadFromUrl(prefix+tle+".txt", tle+".txt", mCreatorContext);
 	        }
         }
-		Log.d("TLEDownloader", "Download Complete");
 	}
 	
 	/**downloader method */
@@ -50,7 +49,6 @@ public class TLEDownloader
 			//File file = new File(fileName);
 			
 			long startTime = System.currentTimeMillis();
-			Log.d("TLEDownloader", "Start download from "+TLEUrl);
 			
 			//open url connection
 			URLConnection conn = url.openConnection();
@@ -73,7 +71,6 @@ public class TLEDownloader
 				FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_WORLD_READABLE);
 				fos.write(bab.toByteArray());
 				fos.close();
-				Log.d("TLEDownloader", "Download took "+((System.currentTimeMillis() - startTime)/1000)+" sec");
 			}
 			catch(FileNotFoundException e)
 			{
