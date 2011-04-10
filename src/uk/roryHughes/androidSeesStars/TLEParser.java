@@ -1,5 +1,5 @@
 package uk.roryHughes.androidSeesStars;
 
-public class MovementTester {
+public class TLEParser {
 
 }

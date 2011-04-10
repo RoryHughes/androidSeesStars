@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:orientation="vertical"
 	    android:layout_width="fill_parent"
@@ -11,6 +12,16 @@
 		android:layout_alignParentTop="true"
 		android:layout_alignParentLeft="true"
 		/>
+	<!-- sat view here-->
+	<uk.roryHughes.androidSeesStars.SatelliteView
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/sat_view"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentLeft="true"
+		/>
+	
 	<TextView  
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content" 
@@ -24,12 +35,12 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/hello"
 		android:layout_alignParentLeft="true"
-		android:id="@+id/textTest"
+		android:id="@+id/textInfo"
 		/>
 	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/textTest"
+		android:layout_below="@id/textInfo"
 		android:layout_alignParentLeft="true"
 		android:id="@+id/TVmOutputXa"
 		/>

@@ -17,6 +17,8 @@ import android.util.Log;
 
 public class TLEDownloader
 {
+	private static final String TAG = "TLEDownloader";
+	
 	//private final String PATH = "/data/data/uk.roryHughes.adroidSeesStars/";
 	//file location
 	private Context mCreatorContext;
@@ -48,7 +50,6 @@ public class TLEDownloader
 			URL url   = new URL(TLEUrl);
 			//File file = new File(fileName);
 			
-			long startTime = System.currentTimeMillis();
 			
 			//open url connection
 			URLConnection conn = url.openConnection();

@@ -14,16 +14,20 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
-        public static final int TVGPSlat=0x7f050008;
-        public static final int TVGPSlon=0x7f050009;
-        public static final int TVmOutputXa=0x7f050002;
-        public static final int TVmOutputXo=0x7f050005;
-        public static final int TVmOutputYa=0x7f050003;
-        public static final int TVmOutputYo=0x7f050006;
-        public static final int TVmOutputZa=0x7f050004;
-        public static final int TVmOutputZo=0x7f050007;
-        public static final int camSurface=0x7f050000;
-        public static final int textTest=0x7f050001;
+        public static final int TVGPSlat=0x7f05000b;
+        public static final int TVGPSlon=0x7f05000c;
+        public static final int TVmOutputXa=0x7f050005;
+        public static final int TVmOutputXo=0x7f050008;
+        public static final int TVmOutputYa=0x7f050006;
+        public static final int TVmOutputYo=0x7f050009;
+        public static final int TVmOutputZa=0x7f050007;
+        public static final int TVmOutputZo=0x7f05000a;
+        public static final int cam_id=0x7f05000d;
+        public static final int hello=0x7f050003;
+        public static final int relative_main=0x7f050000;
+        public static final int sat_view=0x7f050002;
+        public static final int surface=0x7f050001;
+        public static final int textInfo=0x7f050004;
     }
     public static final class layout {
         public static final int main=0x7f030000;
