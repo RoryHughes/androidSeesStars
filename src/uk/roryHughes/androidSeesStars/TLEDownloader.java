@@ -19,8 +19,6 @@ public class TLEDownloader
 {
 	private static final String TAG = "TLEDownloader";
 	
-	//private final String PATH = "/data/data/uk.roryHughes.adroidSeesStars/";
-	//file location
 	private Context mCreatorContext;
 	
 	public TLEDownloader(Context context)
@@ -28,7 +26,17 @@ public class TLEDownloader
 		this.mCreatorContext = context;
 	}
 	
-	public void downloadTLESet(String[] files, String prefix, ConnectivityManager conManager)
+	
+	/**
+	 *  downlods TLE Set of files from given url
+	 *  
+	 *  @param files String Array holding file names of TLEs
+	 *  @param prefix String of the directory the fiels are stored at (URL)
+	 *  @param conManager ConnectivityManager for connection
+	 *  
+	 *  @return returns true when finished
+	 */
+	public int downloadTLESet(String[] files, String prefix, ConnectivityManager conManager)
 	{
         //TODO - put into seperate thread
 		if(conManager.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED || 
@@ -39,6 +47,11 @@ public class TLEDownloader
 	        	downloadFromUrl(prefix+tle+".txt", tle+".txt", mCreatorContext);
 	        }
         }
+		else
+		{
+			return 0;
+		}
+		return 1;
 	}
 	
 	/**downloader method */
@@ -47,6 +60,7 @@ public class TLEDownloader
 		
 		try
 		{
+			Log.d(TAG, "Downloading "+ TLEUrl +" to "+ fileName);
 			URL url   = new URL(TLEUrl);
 			//File file = new File(fileName);
 			

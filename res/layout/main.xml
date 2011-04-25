@@ -12,7 +12,6 @@
 		android:layout_alignParentTop="true"
 		android:layout_alignParentLeft="true"
 		/>
-	<!-- sat view here-->
 	<uk.roryHughes.androidSeesStars.SatelliteView
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/sat_view"
@@ -30,38 +29,10 @@
 	    android:text="@string/hello"
 	    android:id="@+id/hello"
     	/>
- 	<TextView
+	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/hello"
-		android:layout_alignParentLeft="true"
-		android:id="@+id/textInfo"
-		/>
-	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/textInfo"
-		android:layout_alignParentLeft="true"
-		android:id="@+id/TVmOutputXa"
-		/>
-	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/TVmOutputXa"
-		android:layout_alignParentLeft="true"
-		android:id="@+id/TVmOutputYa"
-		/>
-	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/TVmOutputYa"
-		android:layout_alignParentLeft="true"
-		android:id="@+id/TVmOutputZa"
-		/>
-	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/TVmOutputZa"
 		android:layout_alignParentLeft="true"
 		android:id="@+id/TVmOutputXo"
 		/>
@@ -98,6 +69,13 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/TVGPSlon"
 		android:layout_alignParentLeft="true"
-		android:id="@+id/cam_id"
+		android:id="@+id/TVSatLat"
+		/>
+	<TextView
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/TVSatLat"
+		android:layout_alignParentLeft="true"
+		android:id="@+id/TVSatLon"
 		/>
 </RelativeLayout>
