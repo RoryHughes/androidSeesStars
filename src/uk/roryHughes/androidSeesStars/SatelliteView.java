@@ -16,6 +16,8 @@ public class SatelliteView extends View
 	
 	private static final String TAG = "Satellite View";
 	
+	private static final int mCentreRadius = 10;
+	
 	private Satellite mSatellite = null;
 	
 	private float[] mOrientation 	= new float[3];
@@ -27,15 +29,17 @@ public class SatelliteView extends View
 	private double mDistance 		= Double.NaN; 	//straight line distance "through" earth
 	private double mUserElevation	= Double.NaN;
 	private double mReqElevation	= Double.NaN;
-	private double rEarth 			= 6378.1; 		//average radius in KM (cheap and cheerful from google)
+	private static final double rEarth 			= 6378.1; 		//average radius in KM (cheap and cheerful from google)
 									//TODO use better model of earth than assuming sphere
+	private boolean turnRight = true;
+	private double mHeadingDif = Double.NaN;
 	
 	private Paint mTextPaint;
+	private Paint mLinePaint;
 	private Paint mCentreCirclePaint;
 
 	Coord centreCoord = new Coord();
 	
-	private int tempCount = 50;
 	
 	/**
 	 * hold coordinates from drawing on screen
@@ -76,6 +80,7 @@ public class SatelliteView extends View
 	{
 		this.mLat = _lat;
 		this.mLon = _lon;
+		this.invalidate();
 	}
 	
 	public void setSatellite(Satellite _satellite)
@@ -98,8 +103,11 @@ public class SatelliteView extends View
 		mTextPaint.setFakeBoldText(true);
 		mTextPaint.setSubpixelText(true);
 		
+		mLinePaint = new Paint(mTextPaint);
+		mLinePaint.setStrokeWidth(5);
 		
-		mCentreCirclePaint = new Paint(mTextPaint);
+		
+		mCentreCirclePaint = new Paint(mLinePaint);
 		mCentreCirclePaint.setColor(Color.WHITE);
 		
 		
@@ -118,19 +126,19 @@ public class SatelliteView extends View
 				centreCoord.x = width/2;
 				centreCoord.y = height/2;
 				
-				canvas.drawCircle(centreCoord.x, centreCoord.y, 10, mCentreCirclePaint);
+				canvas.drawCircle(centreCoord.x, centreCoord.y, mCentreRadius, mCentreCirclePaint);
 				
 				calcGroundDistance();
 				
-				//calculate users compass bearing
 				calcUserHeading();
 				calcReqHeading();
 				
-				
-				//calculate required phone elevation
+				drawHeadingArrows(canvas, height, width);
+
 				calcUserElevation();
-				calcReqElevation();
-				//draw "arrows"
+				calcReqElevation(); //TODO
+				
+				drawElevationArrows(canvas, height, width); //TODO
 				
 			}
 		}
@@ -170,39 +178,25 @@ public class SatelliteView extends View
 		
 		mDistance = 2 * rEarth * Math.sin((mSurfaceDistance/rEarth)/2);
 		
-		if(tempCount == 50)
-		{
-			Log.d(TAG, "mSurfaceDistance = "+mSurfaceDistance);
-			Log.d(TAG, "mDistance        = "+mDistance);
-			tempCount = 0;
-		}
-		tempCount++;
 	}
 	
 	private void calcReqHeading()
 	{
 		//TODO find reference for this (got it from http://www.movable-type.co.uk/scripts/latlong.html )
-		double deltaLat = Math.max(mSatellite.getSatLat(), mLat) - Math.min(mSatellite.getSatLat(), mLat);
 		double deltaLon = Math.max(mSatellite.getSatLon(), mLon) - Math.min(mSatellite.getSatLon(), mLon);
 		
 		double y = Math.sin(Math.toRadians(deltaLon))*Math.cos(Math.toRadians(mSatellite.getSatLat()));
 		double x = Math.cos(Math.toRadians(mLat))*Math.sin(Math.toRadians(mSatellite.getSatLat())) -
 					Math.sin(Math.toRadians(mLat))*Math.cos(Math.toRadians(mSatellite.getSatLat())*Math.cos(Math.toRadians(deltaLon)));
 		
-		mReqHeading = Math.atan2(y, x);
-		
-		//Log.d(TAG, "required bearing = "+Math.toDegrees(mUserHeading));
-		
+		mReqHeading = Math.atan2(y, x);		
 	}
 	
 	private void calcUserHeading()
 	{
-		//get heading from orientation sensors
-		
-		//assuming getOrietnation[0] (x) = heading
-		//in rads counter clockwise
-		double temp = 0;
-		
+		//get heading from orientation sensors		
+		//convert from PI/2 = west, -PI/2 = east to PI/2 = west, 3PI/2 = east etc.
+		//makes calcs simpler
 		if(Double.compare(mOrientation[0], 0) < 0)
 		{
 			mUserHeading = 2*Math.PI + mOrientation[0];
@@ -211,18 +205,82 @@ public class SatelliteView extends View
 		{
 			mUserHeading = mOrientation[0];
 		}
-		Log.d(TAG, "User Heading rads = "+mUserHeading);
-		Log.d(TAG, "User Heading degs = "+Math.toDegrees(mUserHeading));
 		
 	}
 	
 	private void calcReqElevation()
 	{
+		//VERY poor model of earth here - need to find a better method
 		
+		//mReqElevation = 90-chord angle - isoceles angle
+		
+		//using law of cosines to find user-sat distance a = sqrt( b^2+c^2 - 2bc Cos(A) )
+		//once, side lengths are known, find Elevation angle
+		//law of cosines A = arccos( (b^2+c^2-a^2)/2bc )
+
+		double b = rEarth+mSatellite.getSatAltitude();
+		double c = rEarth;
+		double thetaA = rEarth/mSurfaceDistance;
+		double a = Math.sqrt( Math.pow(b,2)+ Math.pow(c,2) - 2*b*c*Math.cos(thetaA) ); //user-sat distance
+		
+		double a_ = b;
+		double b_ = c;
+		double c_ = a;
+		double thetaA_ = Math.acos( (Math.pow(b_,2) + Math.pow(c_,2) - Math.pow(a_,2)) / 2*b_*c_ ); 
+		
+		mReqElevation = thetaA_;
+		
+		Log.d(TAG, "req elevation = "+mReqElevation);
 	}
 	
 	private void calcUserElevation()
 	{
+		//*-1 so using +ve numbers for "infront" of user, makes it easier for me to think!
+		mUserElevation = mOrientation[2]*-1;
+	}
+
+	private void drawHeadingArrows(Canvas canvas, int height, int width)
+	{
+		//TODO improve - say when pointing in right direction etc etc
+		// if clockwise differnce > PI, point "faster" direction
 		
+		mHeadingDif = Math.max(mUserHeading, mReqHeading) - Math.min(mUserHeading, mReqHeading);
+		
+		if(mHeadingDif > Math.toRadians(5))
+		{
+			if(Double.compare(mUserHeading, mReqHeading) < 0)
+				turnRight = true;
+			else
+				turnRight = false;
+			if(mHeadingDif > Math.PI)
+				turnRight = !turnRight;
+	
+			if(turnRight)
+			{
+				//point right
+				canvas.drawLine(centreCoord.x + (width/4), centreCoord.y, centreCoord.x + (width/4)*2, centreCoord.y, mLinePaint);
+				canvas.drawLine(centreCoord.x + (width/4)*2, centreCoord.y, centreCoord.x + (width/4), centreCoord.y + (height/4), mLinePaint);
+				canvas.drawLine(centreCoord.x + (width/4)*2, centreCoord.y, centreCoord.x + (width/4), centreCoord.y - (height/4), mLinePaint);
+			}
+			else
+			{
+				//point left
+				canvas.drawLine(centreCoord.x - (width/4), centreCoord.y, centreCoord.x - (width/4)*2, centreCoord.y, mLinePaint);
+				canvas.drawLine(centreCoord.x - (width/4)*2, centreCoord.y, centreCoord.x - (width/4), centreCoord.y + (height/4), mLinePaint);
+				canvas.drawLine(centreCoord.x - (width/4)*2, centreCoord.y, centreCoord.x - (width/4), centreCoord.y - (height/4), mLinePaint);
+			}
+			mCentreCirclePaint.setColor(Color.WHITE);
+			canvas.drawCircle(centreCoord.x, centreCoord.y, mCentreRadius, mCentreCirclePaint);
+		}
+		else
+		{
+			mCentreCirclePaint.setColor(Color.GREEN);
+			canvas.drawCircle(centreCoord.x, centreCoord.y, mCentreRadius, mCentreCirclePaint);
+		}
+	}
+
+	private void drawElevationArrows(Canvas canvas, int height, int width)
+	{
+		//draw!
 	}
 }

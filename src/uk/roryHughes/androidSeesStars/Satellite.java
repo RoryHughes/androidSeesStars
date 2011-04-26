@@ -59,7 +59,7 @@ public class Satellite
 		
 	}
 	
-	public double getSatHeight()
+	public double getSatAltitude()
 	{
 		return 229.5;
 		//mid height of operating orbit of ISS
