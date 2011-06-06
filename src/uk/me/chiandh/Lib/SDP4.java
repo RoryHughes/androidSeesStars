@@ -3,7 +3,6 @@ package uk.me.chiandh.Lib;
 
 import java.io.*;
 import java.text.*;
-import java.util.Locale;
 
 /**
 <p>The <code>SDP4</code> class is a base class to calculate ephemeris for
@@ -174,9 +173,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
 public class SDP4
 {
   /** Position vector [Gm] */
-  public double[] itsR = {0.,0.,0.};
+  public double[] itsR;
   /** Velocity vector [km/s] */
-  public double[] itsV = {0.,0.,0.};
+  public double[] itsV;
   /** The name of the satellite. */
   public String itsName;
   /** Year and number of launch, plus part counter */
@@ -199,8 +198,7 @@ public class SDP4
    * taken to be the end of the numeric field, so 123E4 cannot be read
    * properly. */
 
-  final static private DecimalFormat form = new DecimalFormat("#", new DecimalFormatSymbols(Locale.ENGLISH));
-   
+  final static private DecimalFormat form  = new DecimalFormat("#");
 
 
   protected double E1_XMO,E1_XNODEO,E1_OMEGAO,E1_EO,E1_XINCL,
@@ -301,8 +299,8 @@ public class SDP4
   {
     double QO, SO, XJ2, XJ4;
 
-    //itsR = new double[3];
-    //itsV = new double[3];
+    itsR = new double[3];
+    itsV = new double[3];
     itsR[0] = 0.01; itsR[1] = 0.; itsR[2] = 0.;
     itsV[0] = 0.;   itsV[1] = 0.; itsV[2] = 0.;
     itsName       = "Unspecified satellite";
@@ -1140,10 +1138,10 @@ public class SDP4
    *   The time for which the calculation should take place.  This must be
    *   given in units of days as the Julian Day minus 2450000 days. */
 
-  static double[] TS = {0.};
-  static int[] IFLAG = {0};
   public final void GetPosVel(double aJulDate)
   {
+    double[] TS = new double[1];
+    int[] IFLAG = new int[1];
 
     TS[0] = C1_XMNPDA * (aJulDate - itsEpochJD);
 
@@ -2092,7 +2090,7 @@ AAAAAAAAAAAAAAAAAAAAAA
   protected final void ReadNorad12(BufferedReader aFile)
     throws SDP4NoLineOneException, SDP4InvalidNumException, IOException
   {
-    String theLine;
+	String theLine;
     double year, day, t, A1, DEL1, AO, DELO, XNODP;
 
     /* Read the first line of elements.
@@ -2216,8 +2214,6 @@ AAAAAAAAAAAAAAAAAAAAAA
    *   TSINCE[0] is the time difference between the time of interest and the
    *   epoch of the TLE.  It must be given in minutes. */
 
-  static double[] dpsec_args = {0.,0.,0.,0.,0.,0.};
-  static double[] dpper_args = {0.,0.,0.,0.,0.};
   protected final void RunSDP4(int[] IFLAG, double[] TSINCE)
   {
     double A, AXN, AYN, AYNL, BETA, BETAL, CAPU, COS2U, COSEPW,
@@ -2226,6 +2222,8 @@ AAAAAAAAAAAAAAAAAAAAAA
       SINNOK, SINU, SINUK, TEMP, TEMP4, TEMP5, TEMP6, TEMPA,
       TEMPE, TEMPL, TSQ, U, UK, UX, UY, UZ, VX, VY, VZ, XINC, XINCK,
       XL, XLL, XLT, XMAM, XMDF, XMX, XMY, XN, XNODDF, XNODE, XNODEK;
+    double[] dpsec_args = new double[6];
+    double[] dpper_args = new double[5];
     int I;
 
     /* The Java compiler requires these initialisations. */

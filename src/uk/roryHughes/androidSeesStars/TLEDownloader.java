@@ -19,11 +19,13 @@ public class TLEDownloader
 {
 	private static final String TAG = "TLEDownloader";
 	
-	private Context mCreatorContext;
+	private Context mContext;
+	private boolean success = false;
+	private int attempts = 0;
 	
 	public TLEDownloader(Context context)
 	{
-		this.mCreatorContext = context;
+		this.mContext = context;
 	}
 	
 	
@@ -34,38 +36,42 @@ public class TLEDownloader
 	 *  @param prefix String of the directory the fiels are stored at (URL)
 	 *  @param conManager ConnectivityManager for connection
 	 *  
-	 *  @return returns true when finished
+	 *  @return returns true if download successfull
 	 */
-	public int downloadTLESet(String[] files, String prefix, ConnectivityManager conManager)
+	public boolean downloadTLESet(String[] files, String prefix, ConnectivityManager conManager)
 	{
-        //TODO - put into seperate thread
+		success = false;
 		if(conManager.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED || 
         	conManager.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED )
         {
-	        for(String tle : files)
+	        success = true;
+			for(String tle : files)
 	        {
-	        	downloadFromUrl(prefix+tle+".txt", tle+".txt", mCreatorContext);
+	        	for(attempts = 0; attempts <= 2; attempts++)
+	        	{
+	        		if(downloadFromUrl(prefix+tle+".txt", tle+".txt", mContext))
+	        		{
+	        			attempts = 3;
+	        		}
+	        		else
+	        		{
+	        			if(attempts == 2)
+	        				success = false;
+	        		}
+	        	}
 	        }
         }
-		else
-		{
-			return 0;
-		}
-		return 1;
+		return success;
 	}
 	
 	/**downloader method */
-	private void downloadFromUrl(String TLEUrl, String fileName, Context context)
+	private boolean downloadFromUrl(String TLEUrl, String fileName, Context _context)
 	{
 		
 		try
 		{
 			Log.d(TAG, "Downloading "+ TLEUrl +" to "+ fileName);
 			URL url   = new URL(TLEUrl);
-			//File file = new File(fileName);
-			
-			
-			//open url connection
 			URLConnection conn = url.openConnection();
 			
 			//define input streams to read from URLConnection
@@ -83,18 +89,21 @@ public class TLEDownloader
 			//convert bytes to string
 			try
 			{
-				FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_WORLD_READABLE);
+				FileOutputStream fos = _context.openFileOutput(fileName, Context.MODE_WORLD_READABLE);
 				fos.write(bab.toByteArray());
 				fos.close();
+				return true;
 			}
 			catch(FileNotFoundException e)
 			{
 				Log.d("TLEDownloader", "error "+e);
+				return false;
 			}
 		}
 		catch(IOException e)
 		{
 			Log.d("TLEDownloader", "Error: "+e);
+			return false;
 		}
 	}
 }

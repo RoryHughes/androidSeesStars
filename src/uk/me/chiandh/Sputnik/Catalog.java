@@ -503,7 +503,6 @@ public class Catalog
    *
    * <p>See also {@link #Mean2Ecl Mean2Ecl}. */
 
-  static double matEcl2Mean[] = {0.,0.,0.,0.,0.,0.,0.,0.,0.};
   protected final void Ecl2Mean(int aNpos, Times aEquinox,
     double inTriplets[], double outTriplets[])
   {
@@ -512,33 +511,22 @@ public class Catalog
 
     eps = Obliquity(aEquinox);
 
-//    double mat[] = {
-//      1.,     0.,            0.,
-//      0.,  Math.cos(eps), Math.sin(eps),
-//      0., -Math.sin(eps), Math.cos(eps)
-//    };
-    
-    matEcl2Mean[0] = 1.;
-    matEcl2Mean[1] = 0.;
-    matEcl2Mean[2] = 0.;
-    matEcl2Mean[3] = 0.;
-    matEcl2Mean[4] = Math.cos(eps);
-    matEcl2Mean[5] = Math.sin(eps);
-    matEcl2Mean[6] = 0.;
-    matEcl2Mean[7] = -Math.sin(eps);
-    matEcl2Mean[8] = Math.cos(eps);
-   
+    double mat[] = {
+      1.,     0.,            0.,
+      0.,  Math.cos(eps), Math.sin(eps),
+      0., -Math.sin(eps), Math.cos(eps)
+    };
 
     for (i = 0; i < aNpos; i++) {
-      outTriplets[3*i+0] = matEcl2Mean[0] * inTriplets[3*i+0]
-                         + matEcl2Mean[3] * inTriplets[3*i+1]
-                         + matEcl2Mean[6] * inTriplets[3*i+2];
-      outTriplets[3*i+1] = matEcl2Mean[1] * inTriplets[3*i+0]
-                         + matEcl2Mean[4] * inTriplets[3*i+1]
-                         + matEcl2Mean[7] * inTriplets[3*i+2];
-      outTriplets[3*i+2] = matEcl2Mean[2] * inTriplets[3*i+0]
-                         + matEcl2Mean[5] * inTriplets[3*i+1]
-                         + matEcl2Mean[8] * inTriplets[3*i+2];
+      outTriplets[3*i+0] = mat[0] * inTriplets[3*i+0]
+                         + mat[3] * inTriplets[3*i+1]
+                         + mat[6] * inTriplets[3*i+2];
+      outTriplets[3*i+1] = mat[1] * inTriplets[3*i+0]
+                         + mat[4] * inTriplets[3*i+1]
+                         + mat[7] * inTriplets[3*i+2];
+      outTriplets[3*i+2] = mat[2] * inTriplets[3*i+0]
+                         + mat[5] * inTriplets[3*i+1]
+                         + mat[8] * inTriplets[3*i+2];
     }
   }
 
@@ -582,19 +570,17 @@ public class Catalog
    *   zero, East 90&deg;, etc.), the elevation in radian and the
    *   topocentric distance in Gm. */
 
-  static double t1GetHori[] = {0.,0.,0.};
-  static double t2GetHori[] = {0.,0.,0.};
-
   protected void GetHori(int aIndex, Station aStation, double aTriplet[])
   {
-    
+    double t1[] = new double[3];
+    double t2[] = new double[3];
     int    i;
 
-    for (i = 0; i < 3; i++) t1GetHori[i] = itsR[3*aIndex+i];
-    J20002Mean(1, aStation, t1GetHori, t2GetHori);
-    Mean2Topo(1,  aStation, t2GetHori, t1GetHori);
-    Topo2Hori(1,  aStation, t1GetHori, t2GetHori);
-    Hmelib.Spher(t2GetHori, aTriplet);
+    for (i = 0; i < 3; i++) t1[i] = itsR[3*aIndex+i];
+    J20002Mean(1, aStation, t1, t2);
+    Mean2Topo(1,  aStation, t2, t1);
+    Topo2Hori(1,  aStation, t1, t2);
+    Hmelib.Spher(t2, aTriplet);
     aTriplet[0] = Hmelib.NormAngle180(aTriplet[0]);
   }
 
@@ -615,18 +601,16 @@ public class Catalog
    *   (South is zero, West 6&nbsp;h, etc.), the declination in radian and the
    *   topocentric distance in Gm. */
 
-  static double t1GetTopo[] =  {0.,0.,0.};
-  static double t2GetTopo[] = {0.,0.,0.};
   protected void GetTopo(int aIndex, Station aStation, double aTriplet[])
   {
-    
-    
+    double t1[] = new double[3];
+    double t2[] = new double[3];
     int    i;
 
-    for (i = 0; i < 3; i++) t1GetTopo[i] = itsR[3*aIndex+i];
-    J20002Mean(1, aStation, t1GetTopo, t2GetTopo);
-    Mean2Topo(1,  aStation, t2GetTopo, t1GetTopo);
-    Hmelib.Spher(t1GetTopo, aTriplet);
+    for (i = 0; i < 3; i++) t1[i] = itsR[3*aIndex+i];
+    J20002Mean(1, aStation, t1, t2);
+    Mean2Topo(1,  aStation, t2, t1);
+    Hmelib.Spher(t1, aTriplet);
     aTriplet[0] = Hmelib.NormAngle180(aTriplet[0]);
   }
 
@@ -675,7 +659,7 @@ public class Catalog
   protected final void Hori2Topo(int aNpos, Station aStation,
     double inTriplets[], double outTriplets[])
   {
-    double mat[] = {0.,0.,0.,0.};
+    double mat[] = new double[4];
     double theLat;
     int i;
 
@@ -776,7 +760,6 @@ public class Catalog
    *   Array of 3*aNpos returned numbers, each group of three forming an xyz
    *   position in Gm. */
 
-  static double matJ2000[] = {0.,0.,0.,0.,0.,0.,0.,0,0.};
   protected final void J20002Mean(int aNpos, Times aEquinox,
     double inTriplets[], double outTriplets[])
   {
@@ -794,49 +777,32 @@ public class Catalog
     z     /= Hmelib.DEGPERRAD;
     theta /= Hmelib.DEGPERRAD;
 
-//    double matJ2000[] = {
-//      +Math.cos(zeta) * Math.cos(theta) * Math.cos(z)
-//     - Math.sin(zeta)                   * Math.sin(z),
-//      -Math.sin(zeta) * Math.cos(theta) * Math.cos(z)
-//     - Math.cos(zeta)                   * Math.sin(z),
-//                       -Math.sin(theta) * Math.cos(z),
-//      +Math.cos(zeta) * Math.cos(theta) * Math.sin(z)
-//     + Math.sin(zeta)                   * Math.cos(z),
-//      -Math.sin(zeta) * Math.cos(theta) * Math.sin(z)
-//     + Math.cos(zeta)                   * Math.cos(z),
-//                       -Math.sin(theta) * Math.sin(z),
-//      +Math.cos(zeta) * Math.sin(theta),
-//      -Math.sin(zeta) * Math.sin(theta),
-//                       +Math.cos(theta)
-//    };
-    matJ2000[0] = +Math.cos(zeta) * Math.cos(theta) * Math.cos(z)
-				- Math.sin(zeta) * Math.sin(z);
-    
-    matJ2000[1] = -Math.sin(zeta) * Math.cos(theta) * Math.cos(z)
-				- Math.cos(zeta) * Math.sin(z);
-    matJ2000[2] = -Math.sin(theta) * Math.cos(z);
-    
-    matJ2000[3] = +Math.cos(zeta) * Math.cos(theta) * Math.sin(z)
-    + Math.sin(zeta)                   * Math.cos(z);
-    matJ2000[4] = -Math.sin(zeta) * Math.cos(theta) * Math.sin(z)
-    + Math.cos(zeta)                   * Math.cos(z);
-
-    matJ2000[5] =  -Math.sin(theta) * Math.sin(z);
-    matJ2000[6] = +Math.cos(zeta) * Math.sin(theta);
-
-    matJ2000[7] =  -Math.sin(zeta) * Math.sin(theta);
-    matJ2000[8] =  +Math.cos(theta);
+    double mat[] = {
+      +Math.cos(zeta) * Math.cos(theta) * Math.cos(z)
+     - Math.sin(zeta)                   * Math.sin(z),
+      -Math.sin(zeta) * Math.cos(theta) * Math.cos(z)
+     - Math.cos(zeta)                   * Math.sin(z),
+                       -Math.sin(theta) * Math.cos(z),
+      +Math.cos(zeta) * Math.cos(theta) * Math.sin(z)
+     + Math.sin(zeta)                   * Math.cos(z),
+      -Math.sin(zeta) * Math.cos(theta) * Math.sin(z)
+     + Math.cos(zeta)                   * Math.cos(z),
+                       -Math.sin(theta) * Math.sin(z),
+      +Math.cos(zeta) * Math.sin(theta),
+      -Math.sin(zeta) * Math.sin(theta),
+                       +Math.cos(theta)
+    };
 
     for (i = 0; i < aNpos; i++) {
-      outTriplets[3*i+0] = matJ2000[0] * inTriplets[3*i+0]
-                         + matJ2000[1] * inTriplets[3*i+1]
-                         + matJ2000[2] * inTriplets[3*i+2];
-      outTriplets[3*i+1] = matJ2000[3] * inTriplets[3*i+0]
-                         + matJ2000[4] * inTriplets[3*i+1]
-                         + matJ2000[5] * inTriplets[3*i+2];
-      outTriplets[3*i+2] = matJ2000[6] * inTriplets[3*i+0]
-                         + matJ2000[7] * inTriplets[3*i+1]
-                         + matJ2000[8] * inTriplets[3*i+2];
+      outTriplets[3*i+0] = mat[0] * inTriplets[3*i+0]
+                         + mat[1] * inTriplets[3*i+1]
+                         + mat[2] * inTriplets[3*i+2];
+      outTriplets[3*i+1] = mat[3] * inTriplets[3*i+0]
+                         + mat[4] * inTriplets[3*i+1]
+                         + mat[5] * inTriplets[3*i+2];
+      outTriplets[3*i+2] = mat[6] * inTriplets[3*i+0]
+                         + mat[7] * inTriplets[3*i+1]
+                         + mat[8] * inTriplets[3*i+2];
     }
   }
 
@@ -874,7 +840,6 @@ public class Catalog
    *   Array of 3*aNpos returned numbers, each group of three forming an xyz
    *   position in Gm. */
 
-  static double matMean2Ecl[] = {0.,0.,0.,0.,0.,0.,0.,0};
   protected final void Mean2Ecl(int aNpos, Times aEquinox,
     double inTriplets[], double outTriplets[])
   {
@@ -883,22 +848,22 @@ public class Catalog
 
     eps = Obliquity(aEquinox);
 
-    double matMean2Ecl[] = {
+    double mat[] = {
       1.,     0.,            0.,
       0.,  Math.cos(eps), Math.sin(eps),
       0., -Math.sin(eps), Math.cos(eps)
     };
 
     for (i = 0; i < aNpos; i++) {
-      outTriplets[3*i+0] = matMean2Ecl[0] * inTriplets[3*i+0]
-                         + matMean2Ecl[1] * inTriplets[3*i+1]
-                         + matMean2Ecl[2] * inTriplets[3*i+2];
-      outTriplets[3*i+1] = matMean2Ecl[3] * inTriplets[3*i+0]
-                         + matMean2Ecl[4] * inTriplets[3*i+1]
-                         + matMean2Ecl[5] * inTriplets[3*i+2];
-      outTriplets[3*i+2] = matMean2Ecl[6] * inTriplets[3*i+0]
-                         + matMean2Ecl[7] * inTriplets[3*i+1]
-                         + matMean2Ecl[8] * inTriplets[3*i+2];
+      outTriplets[3*i+0] = mat[0] * inTriplets[3*i+0]
+                         + mat[1] * inTriplets[3*i+1]
+                         + mat[2] * inTriplets[3*i+2];
+      outTriplets[3*i+1] = mat[3] * inTriplets[3*i+0]
+                         + mat[4] * inTriplets[3*i+1]
+                         + mat[5] * inTriplets[3*i+2];
+      outTriplets[3*i+2] = mat[6] * inTriplets[3*i+0]
+                         + mat[7] * inTriplets[3*i+1]
+                         + mat[8] * inTriplets[3*i+2];
     }
   }
 
@@ -907,7 +872,7 @@ public class Catalog
    * Convert equinox of date to J2000 coordinates.
    *
    * <p>See also {@link #J20002Mean J20002Mean}. */
-  static double matMean2J2000[] = {0.,0.,0.,0.,0.,0.,0.,0.,0.};
+
   protected final void Mean2J2000(int aNpos, Times aEquinox,
     double inTriplets[], double outTriplets[])
   {
@@ -925,50 +890,32 @@ public class Catalog
     z     /= Hmelib.DEGPERRAD;
     theta /= Hmelib.DEGPERRAD;
 
-//    double matMean2J2000[] = {
-//      +Math.cos(zeta) * Math.cos(theta) * Math.cos(z)
-//     - Math.sin(zeta)                   * Math.sin(z),
-//      -Math.sin(zeta) * Math.cos(theta) * Math.cos(z)
-//     - Math.cos(zeta)                   * Math.sin(z),
-//                       -Math.sin(theta) * Math.cos(z),
-//      +Math.cos(zeta) * Math.cos(theta) * Math.sin(z)
-//     + Math.sin(zeta)                   * Math.cos(z),
-//      -Math.sin(zeta) * Math.cos(theta) * Math.sin(z)
-//     + Math.cos(zeta)                   * Math.cos(z),
-//                       -Math.sin(theta) * Math.sin(z),
-//      +Math.cos(zeta) * Math.sin(theta),
-//      -Math.sin(zeta) * Math.sin(theta),
-//                       +Math.cos(theta)
-//    };
+    double mat[] = {
+      +Math.cos(zeta) * Math.cos(theta) * Math.cos(z)
+     - Math.sin(zeta)                   * Math.sin(z),
+      -Math.sin(zeta) * Math.cos(theta) * Math.cos(z)
+     - Math.cos(zeta)                   * Math.sin(z),
+                       -Math.sin(theta) * Math.cos(z),
+      +Math.cos(zeta) * Math.cos(theta) * Math.sin(z)
+     + Math.sin(zeta)                   * Math.cos(z),
+      -Math.sin(zeta) * Math.cos(theta) * Math.sin(z)
+     + Math.cos(zeta)                   * Math.cos(z),
+                       -Math.sin(theta) * Math.sin(z),
+      +Math.cos(zeta) * Math.sin(theta),
+      -Math.sin(zeta) * Math.sin(theta),
+                       +Math.cos(theta)
+    };
 
-    matMean2J2000[0] = +Math.cos(zeta) * Math.cos(theta) * Math.cos(z)
-				- Math.sin(zeta) * Math.sin(z);
-
-    matMean2J2000[1] = -Math.sin(zeta) * Math.cos(theta) * Math.cos(z)
-				- Math.cos(zeta) * Math.sin(z);
-    matMean2J2000[2] = -Math.sin(theta) * Math.cos(z);
-
-    matMean2J2000[3] = +Math.cos(zeta) * Math.cos(theta) * Math.sin(z)
-				+ Math.sin(zeta) * Math.cos(z);
-    matMean2J2000[4] = -Math.sin(zeta) * Math.cos(theta) * Math.sin(z)
-				+ Math.cos(zeta) * Math.cos(z);
-
-    matMean2J2000[5] = -Math.sin(theta) * Math.sin(z);
-    matMean2J2000[6] = +Math.cos(zeta) * Math.sin(theta);
-
-    matMean2J2000[7] = -Math.sin(zeta) * Math.sin(theta);
-    matMean2J2000[8] = +Math.cos(theta);
-		
     for (i = 0; i < aNpos; i++) {
-      outTriplets[3*i+0] = matMean2J2000[0] * inTriplets[3*i+0]
-                         + matMean2J2000[3] * inTriplets[3*i+1]
-                         + matMean2J2000[6] * inTriplets[3*i+2];
-      outTriplets[3*i+1] = matMean2J2000[1] * inTriplets[3*i+0]
-                         + matMean2J2000[4] * inTriplets[3*i+1]
-                         + matMean2J2000[7] * inTriplets[3*i+2];
-      outTriplets[3*i+2] = matMean2J2000[2] * inTriplets[3*i+0]
-                         + matMean2J2000[5] * inTriplets[3*i+1]
-                         + matMean2J2000[8] * inTriplets[3*i+2];
+      outTriplets[3*i+0] = mat[0] * inTriplets[3*i+0]
+                         + mat[3] * inTriplets[3*i+1]
+                         + mat[6] * inTriplets[3*i+2];
+      outTriplets[3*i+1] = mat[1] * inTriplets[3*i+0]
+                         + mat[4] * inTriplets[3*i+1]
+                         + mat[7] * inTriplets[3*i+2];
+      outTriplets[3*i+2] = mat[2] * inTriplets[3*i+0]
+                         + mat[5] * inTriplets[3*i+1]
+                         + mat[8] * inTriplets[3*i+2];
     }
   }
 
@@ -1021,13 +968,13 @@ public class Catalog
    * @param outTriplets
    *   Array of 3*aNpos returned numbers, each group of three forming an xyz
    *   position in Gm. */
-static     double vec[] = {0.,0.,0.};
 
   protected final void Mean2Topo(int aNpos, Station aStation,
     double inTriplets[], double outTriplets[])
   {
     double theLST;
-    //double mat[] = {0.,0.,0.,0.};
+    double mat[] = new double[4];
+    double vec[] = new double[3];
     int i;
 
     theLST = aStation.GetLST() * Math.PI / 12.;
@@ -1115,7 +1062,7 @@ static     double vec[] = {0.,0.,0.};
 
   protected void SetB1950(int aIndex, double aTriplet[])
   {
-    double t1[] = {0.,0.,0.};
+    double t1[] = new double[3];
     int    i;
 
     B19502J2000(1, aTriplet, t1);
@@ -1140,8 +1087,8 @@ static     double vec[] = {0.,0.,0.};
 
   protected void SetEcl(int aIndex, Times aEquinox, double aTriplet[])
   {
-    double t1[] = {0.,0.,0.};
-    double t2[] = {0.,0.,0.};
+    double t1[] = new double[3];
+    double t2[] = new double[3];
     int    i;
 
     Ecl2Mean(1, aEquinox, aTriplet, t1);
@@ -1164,8 +1111,8 @@ static     double vec[] = {0.,0.,0.};
 
   protected void SetGal(int aIndex, double aTriplet[])
   {
-    double t1[] = {0.,0.,0.};
-    double t2[] = {0.,0.,0.};
+    double t1[] = new double[3];
+    double t2[] = new double[3];
     int    i;
 
     Gal2B1950(1, aTriplet, t1);
@@ -1194,8 +1141,8 @@ static     double vec[] = {0.,0.,0.};
 
   protected void SetHori(int aIndex, Station aStation, double aTriplet[])
   {
-    double t1[] = {0.,0.,0.};
-    double t2[] = {0.,0.,0.};
+    double t1[] = new double[3];
+    double t2[] = new double[3];
     int    i;
 
     Hori2Topo(1, aStation, aTriplet, t2);
@@ -1238,14 +1185,13 @@ static     double vec[] = {0.,0.,0.};
    *   Three floating point numbers containing the x, y and z coordinates.
    *   These should normally be in Gm. */
 
-  static double t1SetMean[] = {0.,0.,0.};
   protected void SetMean(int aIndex, Times aEquinox, double aTriplet[])
   {
-    
+    double t1[] = new double[3];
     int    i;
 
-    Mean2J2000(1, aEquinox, aTriplet, t1SetMean);
-    for (i = 0; i < 3; i++) itsR[3*aIndex+i] = t1SetMean[i];
+    Mean2J2000(1, aEquinox, aTriplet, t1);
+    for (i = 0; i < 3; i++) itsR[3*aIndex+i] = t1[i];
   }
 
 
@@ -1265,18 +1211,15 @@ static     double vec[] = {0.,0.,0.};
    *   These should normally be in Gm.  Note that the coordinates are
    *   left-handed, i.e. the y axis points to the West point on the horizon. */
 
-  
-  static double t1SetTopo[] = {0.,0.,0.};
-  static double t2SetTopo[] = {0.,0.,0.};
   protected void SetTopo(int aIndex, Station aStation, double aTriplet[])
   {
-    
-    
+    double t1[] = new double[3];
+    double t2[] = new double[3];
     int    i;
 
-    Topo2Mean(1, aStation, aTriplet, t1SetTopo);
-    Mean2J2000(1, aStation, t1SetTopo, t2SetTopo);
-    for (i = 0; i < 3; i++) itsR[3*aIndex+i] = t2SetTopo[i];
+    Topo2Mean(1, aStation, aTriplet, t1);
+    Mean2J2000(1, aStation, t1, t2);
+    for (i = 0; i < 3; i++) itsR[3*aIndex+i] = t2[i];
   }
 
 
@@ -1320,11 +1263,11 @@ static     double vec[] = {0.,0.,0.};
    * @param outTriplets
    *   Array of 3*aNpos returned numbers, each group of three forming an xyz
    *   position in Gm. */
-  static double mat[] = {0.,0.,0.,0.};
+
   protected final void Topo2Hori(int aNpos, Station aStation,
     double inTriplets[], double outTriplets[])
   {
-    
+    double mat[] = new double[4];
     double theLat;
     int i;
 
@@ -1391,8 +1334,8 @@ static     double vec[] = {0.,0.,0.};
     double inTriplets[], double outTriplets[])
   {
     double theLST;
-    double mat[] = {0.,0.,0.,0.};
-    double vec[] = {0.,0.,0.};
+    double mat[] = new double[4];
+    double vec[] = new double[3];
     int i;
 
     /* Vector from geocentre to station,

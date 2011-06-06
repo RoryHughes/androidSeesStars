@@ -26,34 +26,13 @@
 	    android:layout_height="wrap_content" 
 	    android:layout_alignParentTop="true"
 		android:layout_alignParentLeft="true"
-	    android:text="@string/hello"
-	    android:id="@+id/hello"
+	    android:text="Setting Up - Please Wait"
+	    android:id="@+id/curr_sat"
     	/>
 	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/hello"
-		android:layout_alignParentLeft="true"
-		android:id="@+id/TVmOutputXo"
-		/>
-	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/TVmOutputXo"
-		android:layout_alignParentLeft="true"
-		android:id="@+id/TVmOutputYo"
-		/>
-	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/TVmOutputYo"
-		android:layout_alignParentLeft="true"
-		android:id="@+id/TVmOutputZo"
-		/>
-	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/TVmOutputZo"
+		android:layout_below="@id/curr_sat"
 		android:layout_alignParentLeft="true"
 		android:id="@+id/TVGPSlat"
 		/>
@@ -64,18 +43,21 @@
 		android:layout_alignParentLeft="true"
 		android:id="@+id/TVGPSlon"
 		/>
+	
 	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/TVGPSlon"
+		android:layout_alignParentBottom="true"
 		android:layout_alignParentLeft="true"
-		android:id="@+id/TVSatLat"
+		android:text="location status"
+		android:id="@+id/location_status"
 		/>
 	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/TVSatLat"
+		android:layout_above="@id/location_status"
 		android:layout_alignParentLeft="true"
-		android:id="@+id/TVSatLon"
+		android:text="download status"
+		android:id="@+id/download_status"
 		/>
 </RelativeLayout>

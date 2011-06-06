@@ -2,14 +2,9 @@
 package uk.me.chiandh.Sputnik;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import uk.me.chiandh.Lib.SDP4;
 import uk.me.chiandh.Lib.SDP4Exception;
 import uk.me.chiandh.Lib.Hmelib;
-import uk.me.chiandh.Sputnik.SatellitePosition;
 
 /**
 <p>The <code>Satellite</code> class extends the
@@ -117,86 +112,6 @@ public class Satellite extends NamedObject
     itsSDP4.Init();
   }
 
-static double theSpherShowAllSats[] = {0.,0.,0.};
-public static final ArrayList<SatellitePosition> showAllSats(InputStream is,
-			Telescope aTelescope, ArrayList<SatellitePosition> satellitePositions) {
-		//ArrayList<SatellitePosition>  = new ArrayList<SatellitePosition>();
-	
-
-    
-    
-
-    if (is !=null){
-    	BufferedReader theFile = new BufferedReader(new InputStreamReader(is),65535);
-
-
-    	for (;;) {
-
-    		
-    		Satellite sat = new Satellite();
-    		sat.Init();
-    		try {sat.itsSDP4.NoradNext(theFile);}
-    		catch(Exception e) {break;}
-    		sat.itsName = sat.itsSDP4.itsName;
-    		sat.Update(aTelescope);
-    		sat.GetHori(0, aTelescope, theSpherShowAllSats);
-    		
-    		String theOutput = sat.itsName 
-    		+ Hmelib.Wfndm(4, 0, theSpherShowAllSats[0] * Hmelib.DEGPERRAD)
-    		+ Hmelib.Wfndm(5, 0, theSpherShowAllSats[1] * Hmelib.DEGPERRAD)
-    		+ Hmelib.Wfndm(8, 0, theSpherShowAllSats[2] * 1E6);
-
-
-    		SatellitePosition satPosn = 
-    			new SatellitePosition(sat.itsName, theOutput, 
-    					theSpherShowAllSats[0] * Hmelib.DEGPERRAD, 
-    					theSpherShowAllSats[0],
-    					theSpherShowAllSats[1] * Hmelib.DEGPERRAD, 
-    					theSpherShowAllSats[1],
-    					theSpherShowAllSats[2] * 1E6,
-    					sat);
-    		satellitePositions.add(satPosn);
-    		
-
-    	}
-
-    	try {
-    		theFile.close();
-    	} catch (IOException e) {
-    		e.printStackTrace();
-    	}
-
-    }
-    else{
-    	//iterate through the arraylist, get name and update
-			for (SatellitePosition satPosn : satellitePositions) {
-				synchronized (satPosn) {
-					satPosn.sat.Update(aTelescope);
-					satPosn.sat.GetHori(0, aTelescope, theSpherShowAllSats);
-					String theOutput = satPosn.sat.itsName
-							+ Hmelib.Wfndm(4, 0, theSpherShowAllSats[0]
-									* Hmelib.DEGPERRAD)
-							+ Hmelib.Wfndm(5, 0, theSpherShowAllSats[1]
-									* Hmelib.DEGPERRAD)
-							+ Hmelib.Wfndm(8, 0, theSpherShowAllSats[2] * 1E6);
-					satPosn.displayString.replace(0, satPosn.displayString
-							.length(), theOutput);
-					satPosn.azimuth = theSpherShowAllSats[0] * Hmelib.DEGPERRAD;
-					satPosn.azRadians = theSpherShowAllSats[0];
-					satPosn.elevation = theSpherShowAllSats[1]
-							* Hmelib.DEGPERRAD;
-					satPosn.elRadians = theSpherShowAllSats[1];
-					satPosn.range = theSpherShowAllSats[2] * 1E6;
-				}
-    	}
-    	
-    }
-	
-	
-	return satellitePositions;
-	
-
-}
 
   /**
 Display all satellites from a given file.
@@ -299,8 +214,7 @@ method.</p>
 
       /* Write the name, position and sunlit status to the output stream. */
 
-      //if (0. < theSpher[1]) {
-      if (true){
+      if (0. < theSpher[1]) {
 	theOutput = theOutput
 	  + Hmelib.Wfndm(8, 3, theSpher[0] * Hmelib.DEGPERRAD)
 	  + Hmelib.Wfndm(9, 3, theSpher[1] * Hmelib.DEGPERRAD)
@@ -601,10 +515,10 @@ NamedObject and only adds the eclipse state.</p>
    * @param aTelescope
    *   Primarily the time for which to calculate the ephemeris.
    *   Also the position of the Sun. */
-static double theSunPos[] = {0.,0.,0.};
+
   public final void Update(Telescope aTelescope)
   {
-    
+    double theSunPos[] = new double[3];
     double r, r_para, r_perp;
 
     /* Tell the SPD4 instance we own to calculate position and velocity.

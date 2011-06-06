@@ -15,6 +15,16 @@ import android.view.ViewGroup;
 /**
  * -----From Android Developers------
  * 
+ * This class is taken from the android developers website
+ * 		(http://developer.android.com/resources/samples/ApiDemos/src/com/example/android/apis/graphics/CameraPreview.html) last accessed 3-6-11
+ *  & is available in the SDK
+ *  	(<sdk>/samples/android-<version>/...)
+ *  
+ *  I take no credit for the code in this class
+ *  
+ *  
+ *  ---------------------------------
+ * 
  * A simple wrapper around a Camera and a SurfaceView that renders a centered preview of the Camera
  * to the surface. We need to center the SurfaceView because not all devices have cameras that
  * support preview sizes at the same aspect ratio as the device's display.
@@ -178,7 +188,4 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
         	mCamera.startPreview();
     }
 
-
-    
-    
 }

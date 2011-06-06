@@ -112,6 +112,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
   to return a string rather than write to stdout.
   Change CommandSatPass(), CommandIridium()
   to return a string instead of writing to stdout.</dd>
+<dt><strong>2009-03-01:</strong> hme</dt>
+<dd>Fix array length of aOctet (Heliograph and h0001). For planets and Sun
+  GetPhysics now requires 10 elements. For Pluto and Moon, 8 is still
+  enough.</dd>
 </dl>
 
 @author
@@ -206,7 +210,7 @@ l = asin(x<sub>3</sub>/cos(b)) + CM
     throws HmelibException
   {
     String theString;
-    double theOctet[] = new double[8];
+    double theOctet[] = new double[10];
     double x0, y0, r, q, x, y, l, b;
     double x1, y1, x2, y2, z2;
 
@@ -2415,7 +2419,7 @@ Serve various <code>whatever/show</code> commands.
 
   public final void h0001(String aCommand)
   {
-    double theOctet[] = new double[8];
+    double theOctet[] = new double[10];
     Mars theMars;
 
     /* Create Mars and update it to the time currently set. */

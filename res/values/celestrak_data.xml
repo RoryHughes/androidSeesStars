@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="celestrak_prefix">http://celestrak.com/NORAD/elements/</string>
+	
+	<string-array
+        name="celestrak_tles">
+        <item>tle-new</item>
+        <item>stations</item>
+        <item>visual</item>
+        <item>1999-025</item>
+        <item>iridium-33-debris</item>
+        <item>cosmos-2251-debris</item>
+        <item>noaa</item>
+        <item>goes</item>
+        <item>resource</item>
+        <item>sarsat</item>
+        <item>dmc</item>
+        <item>tdrss</item>
+        <item>geo</item>
+        <item>intelsat</item>
+        <item>gorizont</item>
+        <item>raduga</item>
+        <item>molniya</item>
+        <item>iridium</item>
+        <item>orbcomm</item>
+        <item>globalstar</item>
+        <item>amateur</item>
+        <item>x-commw</item>
+        <item>other-comm</item>
+        <item>gps-ops</item>
+        <item>glo-ops</item>
+        <item>galileo</item>
+        <item>sbas</item>
+        <item>nnss</item>
+        <item>musson</item>
+        <item>science</item>
+        <item>geodetic</item>
+        <item>engineering</item>
+        <item>military</item>
+        <item>radar</item>
+        <item>cubesat</item>
+        <item>other</item>    
+    </string-array>
+	
+</resources>

@@ -1,123 +1,91 @@
 package uk.roryHughes.androidSeesStars;
 
+import uk.me.chiandh.Lib.SDP4;
+import android.text.format.Time;
 import android.util.Log;
 
 
 /**
- * @author Rory
+ * @author Rory Hughes
  *
- * Class to hold parsed TLE data etc for a satellite
+ * Class to represent a satellite
+ * contains instance of SDP4 class (Which I take no credit for) to do some maths on TLE data
  *
  */
 public class Satellite
-{
-	
-	//TODO add getter and setter methods (& make vars private (maybe))
-	//like this because I need to get on with other stuff and save some time
-	//should use a better method than setter array
+{	
+	//TODO - put calcs into seperate class
 	
 	private static final String TAG = "Satellite";
+	public static final double rEarth = 6378.1; //average radius in KM (cheap and cheerful from google)
+	 //use better model of earth than assuming sphere time once working
+
+	private double[] mLLA = new double[3];
+	private CoordConverter coordConverter;
+	public SDP4 mSDP4;  //instance of SDP4 class to calculate satellites position etc.	
+	private Time mTime;
 	
-	public String line1;
-	public String satNumLine1;
-	public String classification;
-	public String idYear;
-	public String idLaunchNum;
-	public String idLaunchPiece;
-	public String epochYear;
-	public String epochDay;
-	public String firstTimeDerivMeanMotion;
-	public String secondTimeDerivMeanMotion;
-	public String bstarDragTerm;
-	public String ephemerisType;
-	public String elementNumber;
-	public String checkSumLine1;
-	public String[] line1Arr = new String[] {line1, satNumLine1, classification, idYear, idLaunchNum, idLaunchPiece, epochYear, epochDay,
-								firstTimeDerivMeanMotion, secondTimeDerivMeanMotion, bstarDragTerm, ephemerisType, elementNumber, checkSumLine1};
-								//convinece for operations on all vars - get rid of at end of testing if not needed
-	
-	public String line2;
-	public String satNumLine2;
-	public String inclination;
-	public String rightAscensionAscendingNode; //degrees
-	public String eccentricity;
-	public String argOfPedigree;
-	public String meanAnomaly;
-	public String meanMotion;
-	public String revNumAtEpoch;
-	public String checkSumLine2;
-	public String[] line2Arr = new String[] {line2, satNumLine2, inclination, rightAscensionAscendingNode, eccentricity, argOfPedigree, meanAnomaly,
-								meanMotion, revNumAtEpoch, checkSumLine2};
-								//convinece for operations on all vars - get rid of at end of testing if not needed
-	
-	private double mLat = Double.NaN;
-	private double mLon = Double.NaN;
-	private double mHeight = Double.NaN; 
+	private int temp = 50;
 	
 	public Satellite()
 	{
+		coordConverter = new CoordConverter();
 		
+		mTime = new Time();
+		mSDP4 = new SDP4();
+		mSDP4.Init();
 	}
 	
-	public double getSatAltitude()
+	public SDP4 getSDP4()
 	{
-		return 229.5;
+		return mSDP4;
+	}
+	
+	public double getAltitude()
+	{
 		//mid height of operating orbit of ISS
-		//TODO calculate & return current height
-		//return this.mHeight;
+		//mLLA[2] = 229.5;
+		
+		
+		return mLLA[2];
 	}
 	
-	public double getSatLat()
+	public double getLat()
 	{
-		return 41.90368244;
 		//lat of vatican city (had to pick somewhere to test!)
-		//TODO calculate & return current lat
-		//return this.mLat;
+		//mLLA[0] = 41.90368244;
+		return mLLA[0];
+		
 	}
 	
-	public double getSatLon()
+	public double getLon()
 	{
-		return 12.45334625;
 		//lon of vatican city (had to pick somewhere to test!)
-		//TODO calculate & return current lon
-		//return this.mLon;
-	}
-	
-	public void setUp(String[] arr1, String[] arr2)
-	{
-		for(int i = 0; i < line1Arr.length; i++)
-		{
-			arr1[i] = arr1[i].trim();
-			line1Arr[i] = arr1[i];
-		}
-		for(int j = 0; j < line2Arr.length; j++)
-		{
-			arr2[j] = arr2[j].trim();
-			line2Arr[j] = arr2[j];
-		}
+		//mLLA[1] = 12.45334625;
 		
-		calcPos();
+		return mLLA[1];
+	}
+	
+	public void calcPos()
+	{		
+		mSDP4.GetPosVel(Time.getJulianDay(mTime.toMillis(false), mTime.gmtoff)-2450000); //is this whats making it go wrong?
+		// getPosVel argument to julian day - 2450000 (format required by SDP4.java)
 		
-		Log.d(TAG, "Setup finished!");
-	}
-	
-	private void calcPos()
-	{
-		//TODO calculate lat/lon from TLE data
-	}
-	
-	public void showData()
-	{
-		Log.d(TAG, "**Line 1**");
-		for(String data : line1Arr)
+		//itsR is ECI coord - convert to ECF then to LLA
+		mLLA = coordConverter.ECItoLLA(mSDP4.itsR);
+		
+		if(temp == 50)
 		{
-			Log.d(TAG, data);
+			Log.d(TAG, "pos vector = "+ mSDP4.itsR[0] +","+ mSDP4.itsR[1] +","+mSDP4.itsR[2]);
+			Log.d(TAG, "lat = "+ Math.toDegrees(mLLA[0]) +", Lon = "+ Math.toDegrees(mLLA[1]) +", Alt = "+mLLA[2]);
+			temp = 0;
 		}
-		Log.d(TAG, "**Line 2**");
-		for(String data : line2Arr)
-		{
-			Log.d(TAG, data);
-		}
+		temp++;
+		
 	}
 	
+	public String getName()
+	{
+		return this.mSDP4.itsName;
+	}
 }

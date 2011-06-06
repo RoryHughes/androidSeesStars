@@ -70,6 +70,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
   string instead of writing to a given stream.</dd>
 <dt><strong>2008-12-17:</strong> hme</dt>
 <dd>Calculate and display heliocentric correction in Show().</dd>
+<dt><strong>2010-10-19:</strong> hme</dt>
+<dd>Fix huge bug in calculation of heliocentric correction in Show().</dd>
 </dl>
 
 @author
@@ -450,9 +452,8 @@ galactic standard of rest involves the rotation of the Galaxy of
 
     theHJD = 0.;
     if (doHJD) {
-      aTelescope.itsSun.GetPos(Triplet1);
-      J20002Mean( 1, aTelescope, Triplet1, Triplet2);
-      Mean2Ecl(   1, aTelescope, Triplet2, Triplet1);
+      aTelescope.itsSun.GetPos(Triplet2);
+      J20002Mean( 1, aTelescope, Triplet2, Triplet1);
       Mean2Topo(  1, aTelescope, Triplet1, Triplet2);
       Hmelib.Spher(Triplet2, Triplet1);
       theHJD = -Math.cos(Hmelib.SpherDist(Triplet2, theTop))

@@ -863,10 +863,6 @@ public class Times
 
     itsJD = (double)(System.currentTimeMillis()) / 86400000. + 587.5 - 10000.;
   }
-  
-  public void SetUTanyTime(long timeInMillies){
-	  itsJD = (double)(timeInMillies) / 86400000. + 587.5 - 10000.;
-  }
 
 
   /**
@@ -949,7 +945,7 @@ Display the time in various representations.
    * time where the table exists.  Except for 1987 to 2015, the expressions
    * are taken from
    * Jean Meeus, 1991, <em>Astronomical Algorithms</em>, Willmann-Bell, Richmond VA, p.73f.
-   * For the present (1987 to 2030 we use our own graphical linear fit to the
+   * For the present (1987 to 2030) we use our own graphical linear fit to the
    * data 1987 to 2012 from
    * USNO/HMNAO, 2007, <em>Astronomical Almanach 2009</em>, U.S. Government Printing Office, Washington DC, Her Majesty's Stationery Office, London, p.K9:</p>
    *
@@ -986,7 +982,7 @@ Display the time in various representations.
    * <p>DeltaT/s = 1830 - 405 * t + 46.5 * t<sup>2</sup></p>
    *
    * <p>This leaves no equation for times between 1600 and 1800 and beyond
-   * 2015.  For such times we use the equation of Morrison and Stephenson:</p>
+   * 2030.  For such times we use the equation of Morrison and Stephenson:</p>
    *
    * <p>t = Ep - 1810</p>
    * <p>DeltaT/s = -15 + 0.00325 * t<sup>2</sup></p> */
@@ -1063,7 +1059,7 @@ Display the time in various representations.
       D /= 86400.;
     }
 
-    /* Else (between 1600 and 1800 and after 2010) we use the equation from
+    /* Else (between 1600 and 1800 and after 2030) we use the equation from
      * Morrison and Stephenson, quoted as eqation 9.1 in Meeus, 1991,
      * Astronomical Algorithms, p.73. */
 
